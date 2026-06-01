@@ -1,109 +1,50 @@
-# Real-time Indian Sign Language Translator
+# VisionSign Pro: Real-time ISL Translator
 
-This is a single-page webcam app for recognizing ISL fingerspelling gestures from MediaPipe hand landmarks. It includes tools to collect landmark samples, train a classifier, export a TensorFlow.js model, build a sentence, and speak the sentence with the Web Speech API.
+VisionSign Pro is a state-of-the-art Sign Language recognition system using MediaPipe landmarks and a deep learning model augmented with 30x synthetic data variations for extreme accuracy.
 
-## Files
+## ✨ Features
 
-- `index.html` - browser UI, webcam feed, landmark overlay, TF.js prediction, sentence builder, speech.
-- `data_collection.py` - OpenCV + MediaPipe webcam collector that saves `landmarks.csv`.
-- `model_training.py` - trains and evaluates a scikit-learn RandomForest, then exports a browser-ready TF.js model.
-- `landmarks.csv` - generated training data.
-- `tfjs_model/model.json` - generated model loaded by the web app.
+- **Extreme Accuracy**: Data augmentation (3D rotation, noise, scaling) makes the model robust to any hand angle.
+- **Premium UI**: Stunning dark-mode interface with glassmorphism and real-time visualization.
+- **Instant Inference**: Flask-powered backend for lightning-fast predictions.
+- **Text-to-Speech**: Built-in voice synthesis to read your translations aloud.
 
-## Install Python Dependencies
+## 🚀 Quick Start
 
-Use Python 3.10 or 3.11 if possible.
-
+### 1. Install Dependencies
 ```bash
-py -m pip install opencv-python mediapipe pandas numpy scikit-learn joblib tensorflow tensorflowjs
+pip install tensorflow mediapipe pandas numpy scikit-learn flask flask-cors opencv-python
 ```
 
-On Windows, use `py` instead of `python` if `python` is not on your PATH.
-
-## Collect Gesture Data
-
-Run:
-
+### 2. Train the "Master" Model
+If you want to use the existing dataset or after collecting new data:
 ```bash
-py data_collection.py
+python train_tf_model.py
 ```
+*Note: This script now generates 30 variants for every single sample, significantly boosting model robustness.*
 
-The webcam window will open with MediaPipe landmarks drawn over your hand.
-
-- Press any letter key `A-Z` to record 100 frames for that gesture.
-- Keep one hand clearly visible while recording.
-- Repeat for every ISL fingerspelling class you want to support.
-- Press `Esc` to quit.
-
-The script writes rows to `landmarks.csv` with:
-
-```text
-label, x0, y0, z0, ..., x20, y20, z20
-```
-
-Each row has one label plus 63 landmark features.
-
-## Train and Export
-
-Run:
-
+### 3. Run the Application
+Start the backend:
 ```bash
-py model_training.py
+python app.py
 ```
 
-The script:
-
-1. Loads `landmarks.csv`.
-2. Normalizes landmarks relative to the wrist and scales them by hand size.
-3. Trains a scikit-learn `RandomForestClassifier`.
-4. Prints a classification report and confusion matrix.
-5. Saves the RandomForest to `random_forest_model.joblib`.
-6. Trains a small Keras classifier on the same normalized data.
-7. Exports the browser model to `tfjs_model/model.json` and writes `tfjs_model/labels.json`.
-
-TensorFlow.js cannot load a scikit-learn RandomForest directly, so the RandomForest is used for the required classical ML evaluation while the Keras model is exported for live browser inference.
-
-## Run the Web App
-
-Because browsers require a secure origin or localhost for webcam access, serve the folder instead of opening the file directly:
-
+Then, serve the frontend (in a new terminal):
 ```bash
-py -m http.server 8000
+python -m http.server 8000
 ```
+Open `http://localhost:8000` in your browser.
 
-Open:
+## 📂 Project Structure
 
-```text
-http://localhost:8000
-```
+- `index.html` - The premium VisionSign Pro frontend.
+- `app.py` - Flask API for real-time gesture prediction.
+- `train_tf_model.py` - Advanced training script with massive data augmentation.
+- `data_collection.py` - Tool to record your own custom hand gestures.
+- `landmarks.csv` - The training dataset (landmark coordinates).
+- `model.h5` - The trained deep learning brain.
 
-Allow camera access when prompted. The app loads:
-
-```text
-./tfjs_model/model.json
-./tfjs_model/labels.json
-```
-
-## Browser Controls
-
-- Current sign shows the top model prediction.
-- Confidence bar shows the prediction probability.
-- Add to sentence appends the current prediction.
-- Space adds a space to the sentence.
-- Speak reads the sentence aloud with the Web Speech API.
-- Clear empties the sentence and stops speech.
-
-## Data Quality Tips
-
-- Collect examples in different lighting conditions and hand positions.
-- Keep labels balanced; collect roughly the same number of samples per class.
-- Use a plain background when possible.
-- Re-record confusing classes with more varied examples.
-- Train with all 26 letters for full A-Z fingerspelling support.
-
-## Troubleshooting
-
-- If the web app says the model is missing, run `py model_training.py` and refresh.
-- If webcam access fails, use `http://localhost:8000` and allow camera permission.
-- If MediaPipe cannot detect a hand, improve lighting and keep the hand fully inside the frame.
-- If `tensorflowjs` fails to install, try a fresh virtual environment with Python 3.10 or 3.11.
+## 🛠️ Data Collection Tips
+- Use `data_collection.py` to add new letters.
+- Move your hand around slightly while recording to capture different angles.
+- The training script will automatically multiply your samples to make the model "unbreakable".
