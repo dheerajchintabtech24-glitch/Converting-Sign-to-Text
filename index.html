@@ -205,14 +205,20 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--surface);
+      color: var(--text);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s, transform 0.1s;
       font-size: 14px;
     }
 
     .btn:hover {
       background: var(--bg);
+      border-color: var(--text-muted);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
     }
 
     .btn-primary {
@@ -221,8 +227,29 @@
       border: none;
     }
 
+    .btn-primary:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:active {
+      background: #1d4ed8;
+      transform: scale(0.97);
+    }
+
     .btn-danger {
       color: var(--red);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: var(--red);
+    }
+
+    .btn-danger:active {
+      background: rgba(239, 68, 68, 0.1);
+      transform: scale(0.97);
     }
 
     .sign-display {
